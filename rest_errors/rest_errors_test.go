@@ -16,8 +16,8 @@ func TestNewInternalServerError(t *testing.T) {
 	assert.EqualValues(t, "internal_server_error", err.Error)
 
 	assert.NotNil(t, err.Causes)
-	assert.EqualValues(t, 1, len(err.Causes))
-	assert.EqualValues(t, "database error", err.Causes[0])
+	assert.EqualValues(t, 1, len(err.Causes()))
+	assert.EqualValues(t, "database error", err.Causes()[0])
 }
 
 func TestNewBadRequestError(t *testing.T) {
@@ -36,8 +36,10 @@ func TestNewNotFoundError(t *testing.T) {
 	assert.EqualValues(t, "not_found", err.Error)
 }
 
-func TestNewError(t *testing.T) {
-	err := NewError("this is the message")
+func TestNewRestError(t *testing.T) {
+	err := NewRestError("this is the message", http.StatusBadGateway, "bad_gateway", nil)
 	assert.NotNil(t, err)
-	assert.EqualValues(t, "this is the message", err.Error())
+	assert.EqualValues(t, "this is the message", err.Message())
+	assert.EqualValues(t, http.StatusBadGateway, err.Status())
+	assert.EqualValues(t, "message: this is the message - status: 502 - error: bad_gateway - causes: [ [] ]", err.Error())
 }
